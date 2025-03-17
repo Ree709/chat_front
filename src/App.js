@@ -14,6 +14,7 @@ export default function ChatApp() {
   const [ws, setWs] = useState(null);
   const [chatrooms, setChatrooms] = useState(["UCI-CS", "Technology", "Sports"]);
   const [selectedRoom, setSelectedRoom] = useState("UCI-CS");
+  const selectedRoomRef = useRef(selectedRoom);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [unreadCounts, setUnreadCounts] = useState({}); // 未读消息计数
@@ -76,7 +77,7 @@ export default function ChatApp() {
               isSelf: messageSender === username, // 是否是自己
             };
 
-            if (chatroom === selectedRoom) {
+            if (chatroom === selectedRoomRef.current) {
               // 当前聊天室收到新消息，直接更新 UI
               setMessages((prevMessages) => [...prevMessages, formattedMessage]);
             } else {
@@ -108,13 +109,19 @@ export default function ChatApp() {
     }
   };
 
+  // 监听 selectedRoom 变化
+  useEffect(() => {
+    selectedRoomRef.current = selectedRoom; // 每次 selectedRoom 变化时更新
+    if (wsRef.current && selectedRoom) {
+      wsRef.current.send(JSON.stringify({ operation: "join_chatroom", user: username, chatroom: selectedRoom }));
+    }
+  }, [selectedRoom]);
+  
   // **Change Chatroom**
   const changeRoom = (room) => {
     setSelectedRoom(room);
     setMessages([]);
-    if (wsRef.current) {
-      wsRef.current.send(JSON.stringify({ operation: "join_chatroom", user: username, chatroom: room }));
-    }
+
     // 清空未读消息计数
     setUnreadCounts((prev) => ({
       ...prev,
@@ -170,7 +177,7 @@ export default function ChatApp() {
                 >
                   {room}
                   {unreadCounts[room] > 0 && (
-                    <span className="unread-count">{unreadCounts[room]}</span>
+                    <span className="unread-count">{" "}{unreadCounts[room]}</span>
                   )}
                 </button>
               ))}

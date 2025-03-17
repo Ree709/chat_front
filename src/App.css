@@ -110,3 +110,9 @@
 .send-btn:hover {
   background-color: #218838;
 }
+
+.unread-count {
+  color: red;  /* 让未读消息数显示红色 */
+  font-weight: bold;
+  margin-left: 5px; /* 确保和聊天室名称之间有间距 */
+}
