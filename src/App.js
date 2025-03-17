@@ -68,10 +68,17 @@ export default function ChatApp() {
           const receivedData = JSON.parse(event.data);
           if (receivedData.operation === "new_message") {
             const { chatroom, message } = receivedData;
+            const messageSender = message.sender ? message.sender : "Unknown";
+            
+            const formattedMessage = {
+              user: messageSender,
+              content: `${messageSender}: ${message.content}`, // 加上发送者姓名
+              isSelf: messageSender === username, // 是否是自己
+            };
 
             if (chatroom === selectedRoom) {
               // 当前聊天室收到新消息，直接更新 UI
-              setMessages((prevMessages) => [...prevMessages, message]);
+              setMessages((prevMessages) => [...prevMessages, formattedMessage]);
             } else {
               // 其他聊天室收到新消息，增加未读计数
               setUnreadCounts((prev) => ({
@@ -177,9 +184,12 @@ export default function ChatApp() {
                 <CardContent className="p-4">
                   <h2 className="chatroom-title">{selectedRoom}</h2>
                   <div className="chatbox">
-                    {messages.map((msg, index) => (
-                      <div key={index} className={`message-bubble ${msg.user === username ? "own" : ""}`}>
-                        <strong>{msg.user}:</strong> {msg.content}
+                  {messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`message-bubble ${msg.isSelf ? "own" : "other"}`}
+                      >
+                        <strong>{msg.content}</strong>
                       </div>
                     ))}
                   </div>

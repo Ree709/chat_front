@@ -57,6 +57,22 @@
   width: fit-content;
 }
 
+.own {
+  background-color: #0084ff;
+  color: white;
+  align-self: flex-end;  /* 让自己发送的消息靠右 */
+  margin-left: auto;
+  text-align: right;
+}
+
+.other {
+  background-color: #e5e5ea;
+  color: black;
+  align-self: flex-start; /* 让别人发送的消息靠左 */
+  margin-right: auto;
+  text-align: left;
+}
+
 .message-bubble.own {
   background-color: #007bff;
   color: white;
